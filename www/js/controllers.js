@@ -1,4 +1,4 @@
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', ['ionic', 'ionic.contrib.ui.tinderCards2'])
 
 .controller('DashCtrl', function($scope) {})
 
@@ -361,4 +361,134 @@ console.log("lo");
 
     }
  
+})
+
+.config(function($stateProvider, $urlRouterProvider) {
+
+})
+
+.factory('Jobs', function($firebaseArray) {
+  var messagesRef = new Firebase("https://twinkle-49ce7.firebaseio.com/");
+  return $firebaseArray(messagesRef);
+})
+
+
+.directive('noScroll', function($document) {
+
+  return {
+    restrict: 'A',
+    link: function($scope, $element, $attr) {
+
+      $document.on('touchmove', function(e) {
+        e.preventDefault();
+      });
+    }
+  }
+})
+
+
+
+
+.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, fireBaseData, $ionicModal, Jobs) {
+
+  var cardTypes = [
+    {id:1, Title:"Revenue Analyst", Company:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Location:"Waterloo. Ont", Team:"Accounting", Salary:"competitive", image: 'http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg' },
+    {id:2, Title:"Revenue Analyst", Company:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Location:"Waterloo. Ont", Team:"Accounting", Salary:"competitive", image: 'https://facebookbrand.com/wp-content/themes/fb-branding/prj-fb-branding/assets/images/fb-art.png' },
+    {id:3, image: 'http://c1.staticflickr.com/1/267/19067097362_14d8ed9389_n.jpg' }
+  ];
+
+  var user_id = 101;
+
+  $scope.likes = {userid: user_id, jobid : []};
+  $scope.dislikes = {userid: user_id, jobid : []};
+
+
+
+  $scope.cards = {
+    master: Array.prototype.slice.call(cardTypes, 0),
+    active: Array.prototype.slice.call(cardTypes, 0),
+    discards: [],
+    liked: [],
+    disliked: []
+  }
+
+  $scope.cardDestroyed = function(index) {
+    $scope.cards.active.splice(index, 1);
+  };
+
+  $scope.addCard = function() {
+    var newCard = cardTypes[0];
+    $scope.cards.active.push(angular.extend({}, newCard));
+  }
+
+  $scope.refreshCards = function() {
+    // Set $scope.cards to null so that directive reloads
+    $scope.cards.active = null;
+    $timeout(function() {
+      $scope.cards.active = Array.prototype.slice.call($scope.cards.master, 0);
+    });
+  }
+
+  $scope.$on('removeCard', function(event, element, card) {
+    var discarded = $scope.cards.master.splice($scope.cards.master.indexOf(card), 1);
+    $scope.cards.discards.push(discarded);
+  });
+
+  $scope.cardSwipedLeft = function(index) {
+    console.log('LEFT SWIPE');
+    var card = $scope.cards.active[index];
+    $scope.cards.disliked.push(card);
+    $scope.dislikes.jobid.push(card.id);
+  };
+  $scope.cardSwipedRight = function(index) {
+    console.log('RIGHT SWIPE');
+    var card = $scope.cards.active[index];
+    $scope.cards.liked.push(card);
+    $scope.likes.jobid.push(card.id);
+    $scope.addlikes(card);
+  };
+
+$scope.openModal = function(cardID) {
+    $ionicModal.fromTemplateUrl('templates/detail.html', {
+        scope: $scope
+        
+    })
+        .then(function(modal) {
+            $scope.modal = modal;
+            if ($scope.modal!=undefined)
+            $scope.modal.show();
+        });
+   
+  };
+
+
+$scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+
+//Firebase stuff
+$scope.jobs =  Jobs;
+//console.log($scope.jobs);
+
+$scope.addlikes = function(job){
+       
+ firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        
+        fireBaseData.refUser().child("likes").child(user.uid).once('value',function(snapshot){var exists = snapshot.val();
+        console.log(exists);
+      });
+
+
+        //Add new address
+          fireBaseData.refUser().child("likes").child(user.uid).push({    // push
+           
+            jobid : job.id
+          });
+      }
+    })
+  };
+
+
+
 });
