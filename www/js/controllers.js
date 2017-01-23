@@ -2,7 +2,7 @@ angular.module('starter.controllers', ['ionic', 'ionic.contrib.ui.tinderCards2']
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('ChatsCtrl', function($scope, Chats) {
+.controller('ChatsCtrl', function($scope, FBqueries, $firebaseArray, $rootScope, sharedUtils, $firebaseObject,fireBaseData,Chats) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -11,15 +11,102 @@ angular.module('starter.controllers', ['ionic', 'ionic.contrib.ui.tinderCards2']
   //$scope.$on('$ionicView.enter', function(e) {
   //});
 
-  $scope.chats = Chats.all();
+firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+      //console.log(user.uid); 
+        //Accessing an array of objects using firebaseObject, does not give you the $id , so use firebase array to get $id
+        //$scope.jobsliked = $firebaseArray(fireBaseData.ref().child("likes").child(user.uid));
+      //var event= [{}];
+   /*  FBqueries.join("likes/"+user.uid,"jobs","jobid").then(function (likedjobs){
+
+        angular.forEach(likedjobs, function(job) {
+            //console.log(user);
+           //console.log(job);
+
+            //joining on Company
+            var t = $firebaseObject(fireBaseData.refCompany().child(job.Company));
+            job.jobid = t;
+
+              })
+
+      
+      $scope.jobsliked = likedjobs;
+
+      });
+
+*/    
+
+      //sharedUtils.showLoading(); //starts the loading popup
+      var listofOB = [];
+      var empOB;
+      fireBaseData.ref().child('likes/'+user.uid).on('child_added', snap1 => {
+        
+        fireBaseData.ref().child('jobs').child(snap1.val().jobid).once('value', function(snap2){
+          
+          fireBaseData.refCompany().child(snap2.val().Company).once('value', function(snap3){
+          
+          //console.log(snap1.val());
+         // console.log(snap2.val());
+         // console.log(snap3.val());
+         //console.log(snap1.val().jobid);
+         empOB = snap1.val();
+         //empOB['jid'] = 44;
+
+         empOB.job = snap2.val();
+         empOB.job.Company = snap3.val();
+          listofOB.push(empOB);
+         //  console.log(empOB);
+          
+        })
+
+        })
+      })
+
+      } // end if
+
+      //console.log(listofOB);
+     // sharedUtils.hideLoading();  //3
+      $scope.jobsliked = listofOB;
+      //$rootScope.storeOB = 43434;
+
+      //FBqueries.save_storeOB($scope.jobsliked);
+        });
+
+
+  //$scope.chats = Chats.all();
   $scope.remove = function(chat) {
     Chats.remove(chat);
   };
 })
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
+.controller('ChatDetailCtrl', function($scope, fireBaseData, $stateParams,$rootScope,FBqueries,Chats) {
+  $scope.chat = Chats.get($stateParams.
+    chatId);
+      /* too slow
+      jobs = FBqueries.get_storeOB();
+      angular.forEach(jobs, function(job){
+        
+        if(job.jobid == $stateParams.chatId){$scope.chat = job.job;
+          console.log($scope.chat);
+        } // end if
+        
+      });*/ //too slow
+
+        fireBaseData.ref().child('jobs/'+$stateParams.chatId).once('value', function(snap){
+
+            fireBaseData.refCompany().child(snap.val().Company).once('value',function(job){
+              //console.log(job.val());
+
+             $scope.chat = snap.val();
+             $scope.chat.Company = job.val();
+            });
+
+        //console.log(snap.val().Company);
+         });
+
+  //console.log(FBqueries.get_storeOB());
+  //console.log($rootScope.storeOB);
+  })
 
 .controller('AccountCtrl', function($scope) {
   $scope.settings = {
@@ -389,7 +476,7 @@ console.log("lo");
 
 
 
-.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, fireBaseData, $ionicModal, Jobs) {
+.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, $firebaseArray,fireBaseData, $ionicModal,$firebaseObject, Jobs) {
 
   var cardTypes = [
     {id:1, Title:"Revenue Analyst", Company:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Location:"Waterloo. Ont", Team:"Accounting", Salary:"competitive", image: 'http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg' },
@@ -397,23 +484,60 @@ console.log("lo");
     {id:3, image: 'http://c1.staticflickr.com/1/267/19067097362_14d8ed9389_n.jpg' }
   ];
 
-  var user_id = 101;
+
+var jobs = $firebaseArray(fireBaseData.ref().child("jobs"));
+     
+     jobs.$loaded().then(function(cards) {
+      
+       angular.forEach(cards, function(job) {
+            //console.log(user);
+           // console.log(job);
+
+            //joining on Company
+            var t = $firebaseObject(fireBaseData.refCompany().child(job.Company));
+            job.Company = t;
+
+              })
+       $scope.cards = cards;
+});
+
+//console.log($scope.cards);
+   
+
+
+
+/*
+$scope.getcompany = function(table,key){ 
+  
+ FBqueries.test(table,key).then(function(snap){
+       $scope.result = snap;
+      
+   });
+ //console.log($scope.result);
+ return $scope.result;
+
+};
+*/
+
+
+//$scope.getcompany("company", "-Kb2Og2A18Q43cqjLqRy")
+
+ /* var user_id = 101;
 
   $scope.likes = {userid: user_id, jobid : []};
   $scope.dislikes = {userid: user_id, jobid : []};
 
+*/
+
+ 
+ 
 
 
-  $scope.cards = {
-    master: Array.prototype.slice.call(cardTypes, 0),
-    active: Array.prototype.slice.call(cardTypes, 0),
-    discards: [],
-    liked: [],
-    disliked: []
-  }
+
+
 
   $scope.cardDestroyed = function(index) {
-    $scope.cards.active.splice(index, 1);
+    //$scope.cards.active.splice(index, 1);
   };
 
   $scope.addCard = function() {
@@ -436,16 +560,17 @@ console.log("lo");
 
   $scope.cardSwipedLeft = function(index) {
     console.log('LEFT SWIPE');
-    var card = $scope.cards.active[index];
-    $scope.cards.disliked.push(card);
-    $scope.dislikes.jobid.push(card.id);
+    var card = $scope.cards[index];
+    //$scope.cards.disliked.push(card);
+    //$scope.dislikes.jobid.push(card.id);
+    $scope.storeswipe("dislikes", card);
   };
   $scope.cardSwipedRight = function(index) {
     console.log('RIGHT SWIPE');
-    var card = $scope.cards.active[index];
-    $scope.cards.liked.push(card);
-    $scope.likes.jobid.push(card.id);
-    $scope.addlikes(card);
+    var card = $scope.cards[index];
+    //$scope.cards.liked.push(card);
+    //$scope.likes.jobid.push(card.id);
+    $scope.storeswipe("likes", card);
   };
 
 $scope.openModal = function(cardID) {
@@ -470,25 +595,108 @@ $scope.closeModal = function() {
 $scope.jobs =  Jobs;
 //console.log($scope.jobs);
 
-$scope.addlikes = function(job){
+$scope.storeswipe = function(like_dislike,job){
        
  firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         
-        fireBaseData.refUser().child("likes").child(user.uid).once('value',function(snapshot){var exists = snapshot.val();
-        console.log(exists);
-      });
-
+      
 
         //Add new address
-          fireBaseData.refUser().child("likes").child(user.uid).push({    // push
+        var push = true;
+          fireBaseData.ref().child(like_dislike).child(user.uid).on('child_added', function(data){    // push
+            
+            angular.forEach(data.val(),function(item){
+              if(item == job.id)
+              {push = false;} //  if           });
+
+           //console.log(data.val());
+            //jobid : job.$id
+              });
+            }); 
+
+
+
+          if(push){
+            fireBaseData.ref().child(like_dislike).child(user.uid).push({    // push
            
-            jobid : job.id
-          });
+                jobid : job.$id
+              });
+
+            }// if
+              
+          }// if
+        });
+  }
+})
+
+
+
+
+
+
+.controller('addjobsCtrl', function(sharedUtils,$scope,fireBaseData) {
+
+
+
+$scope.addjob = function (formName, cred) {
+ 
+  
+      if (formName.$valid) {  // Check if the form data is valid or not
+ 
+       sharedUtils.showLoading();
+
+      //We create a user table to store users additional information.Here, telephone
+            //Add phone number to the user table
+            fireBaseData.ref().child("jobs").push({
+              Title: cred.title,
+              Location: cred.location,
+              Type: cred.type,
+              Salary: cred.salary,
+              Company: cred.company,
+              Role: cred.role,
+              Description: cred.description,
+              Responsibilities: cred.responsibilities,
+              Qualifications: cred.qualifications,
+              Perks: cred.perks
+            });
+ 
+           
+            sharedUtils.hideLoading();
+         
+          }
+ 
+      else{
+        sharedUtils.showAlert("Please note","Entered data is not valid");
       }
-    })
-  };
+    }
+ 
 
+ $scope.addcompany = function (formName, cred) {
+ 
+  
+      if (formName.$valid) {  // Check if the form data is valid or not
+ 
+       sharedUtils.showLoading();
 
+      //We create a user table to store users additional information.Here, telephone
+            //Add phone number to the user table
+            fireBaseData.ref().child("company").push({
+              Name: cred.name,
+              Logo: cred.logo
+              
+            });
+ 
+           
+            sharedUtils.hideLoading();
+         
+          }
+ 
+      else{
+        sharedUtils.showAlert("Please note","Entered data is not valid");
+      }
+    }
+ 
+    
 
 });

@@ -40,12 +40,13 @@
         - We start off with an ng-if so that the cards are not generated
           unless $scope.cards is not 'null'
       ************************* -->
-      <div ng-if="cards.active">
+      <div ng-if="cards">
 
 
         <td-cards>
-          <td-card ng-repeat="card in cards.active" on-destroy="cardDestroyed($index)" on-swipe-left="cardSwipedLeft($index)" on-swipe-right="cardSwipedRight($index)">
+          <td-card ng-repeat="card in cards" on-destroy="cardDestroyed($index)" on-swipe-left="cardSwipedLeft($index)" on-swipe-right="cardSwipedRight($index)">
             
+
 
               <div class="no-text"><i class="icon ion-thumbsdown"></i>No</div>
               <div class="yes-text">Yes<i class="icon ion-thumbsup"></i></div>
@@ -57,12 +58,12 @@
               ************************* -->
               <div class="discard" ng-click="onClickTransitionOut(card)">DISCARD</div>
               
-              <div ng-click="openModal()">
-              <img ng-src="{{ card.image }}">
+              <div ng-click ="openModal()">
+              <img ng-src ="{{card.Company.Logo}}">
 
               <p>Title: {{card.Title}}</p>
               <p>Location: {{card.Location}}</p>
-              <p>Team: {{card.Team}}</p>
+              <p>Team: {{card.Role}}</p>
               <p>Salary: {{card.Salary}}</p>
              
               </div>

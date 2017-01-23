@@ -1,0 +1,116 @@
+<ion-view style="" class=" " id="page6" title="Signup">
+    <ion-content class="has-header" padding="true" style="background: url(img/bfg1.jpg) center; background-size: cover;">
+
+        <form name="addcompform" class="list " id="signup-form2">
+            <ion-list class=" " id="signup-list3">
+
+             
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Name</span>
+                <input style="color: #000;" ng-model="company.name" type="text" placeholder="Name">
+              </label>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Logo</span>
+                <input style="color: #000;" ng-model="company.logo" type="text" placeholder="Logo">
+              </label>
+
+              </ion-list>
+            <div style="width: 279px; height: 35px;" class="spacer"></div>
+            <button ng-click="addcompany(addcompform,company)" class=" button button-assertive  button-block  icon-left ion-ios-email-outline " style="border-radius:0px 0px 0px 0px;" id="signup-button3">ADd company</button>
+            
+        </form>
+
+
+
+
+        <form name="addjobform" class="list " id="signup-form2">
+            <ion-list class=" " id="signup-list3">
+
+               <div class="app-icon"></div>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Title</span>
+                <input style="color: #000;" ng-model="job.title" type="text" placeholder="Title">
+              </label>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Location</span>
+                <input style="color: #000;" ng-model="job.location" type="text" placeholder="Location">
+              </label>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Type</span>
+                <input style="color: #000;" ng-model="job.type" type="text" placeholder="Type">
+              </label>
+
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Salary</span>
+                <input style="color: #000;" ng-model="job.salary" type="text" placeholder="Salary">
+              </label>
+
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Company</span>
+                <input style="color: #000;" ng-model="job.company" type="text" placeholder="Company">
+              </label>
+
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Role</span>
+                <input style="color: #000;" ng-model="job.role" type="text" placeholder="Role">
+              </label>
+
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Description</span>
+                <textarea style="color: #000;" ng-model="job.description" ng-attr-rows="6" 
+                placeholder="Description"></textarea>
+
+              </label>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Responsibilities</span>
+                <textarea style="color: #000;" ng-model="job.responsibilities" ng-attr-rows="6" 
+                placeholder="Responsibilities"></textarea>
+
+              </label>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Qualifications</span>
+                <textarea style="color: #000;" ng-model="job.qualifications" ng-attr-rows="6" 
+                placeholder="Qualifications"></textarea>
+
+              </label>
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;"  class="input-label">Perks</span>
+                <textarea style="color: #000;" ng-model="job.perks" ng-attr-rows="6" 
+                placeholder="Perks"></textarea>
+
+              </label>
+
+
+
+              <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;" class="input-label">Phone</span>
+                <input style="color: #000;" ng-model="job.phone" type="tel" placeholder="Phone">
+              </label>
+
+              <label class="item item-input item-floating-label">
+                  <span style="color: #9F9F9F;" class="input-label">Email</span>
+                  <input style="color: #000;" ng-model="job.email" type="email" placeholder="Email">
+              </label>
+
+              
+
+
+            </ion-list>
+            <div style="width: 279px; height: 35px;" class="spacer"></div>
+            <button ng-click="addjob(addjobform,job)" class=" button button-assertive  button-block  icon-left ion-ios-email-outline " style="border-radius:0px 0px 0px 0px;" id="signup-button3">Add</button>
+            
+        </form>
+    </ion-content>
+</ion-view>

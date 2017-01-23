@@ -99,6 +99,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','f
         }
       }
     })
+
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
       views: {
@@ -108,6 +109,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','f
         }
       }
     })
+
+     .state('addjobs', {
+    url: '/addjobs',
+    templateUrl: 'templates/addjobs.html',
+    controller: 'addjobsCtrl'
+  })
 
   .state('tab.account', {
     url: '/account',

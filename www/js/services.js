@@ -8,7 +8,9 @@ angular.module('starter.services', [])
     refCategory = new Firebase("https://tinder-tips.firebaseio.com/category"),
     refOrder = new Firebase("https://tinder-tips.firebaseio.com/orders"),
     refFeatured = new Firebase("https://tinder-tips.firebaseio.com/featured"),
-    refMenu = new Firebase("https://tinder-tips.firebaseio.com/menu");
+    refMenu = new Firebase("https://tinder-tips.firebaseio.com/menu"),
+    refJobs = new Firebase("https://tinder-tips.firebaseio.com/jobs"),
+    refCompany = new Firebase("https://tinder-tips.firebaseio.com/company");
   return {
     ref: function() {
       return ref;
@@ -30,6 +32,12 @@ angular.module('starter.services', [])
     },
     refMenu: function() {
       return refMenu;
+    },
+    refJobs: function() {
+      return refJobs;
+    },
+    refCompany: function() {
+      return refCompany;
     }
   }
 })
@@ -66,13 +74,66 @@ angular.module('starter.services', [])
 }])
 
 
+.factory('FBqueries', function($q,fireBaseData, $firebaseArray, $firebaseObject) {
+
+    var storeOB;
+    return {
+     
+     test: function(a,b) {
+
+      
+       var defer = $q.defer();
+         fireBaseData.ref().child(a).child(b).once("value", function(snapshot) {
+          // Should alert "Name of the parent: foo".
+          //console.log(snapshot.val());
+          defer.resolve(snapshot.val());
+            } );
+
+         return defer.promise;
+        
+      
+      }, // test function
+
+      
+
+      join: function(tb1,tb2,key){
+
+       var defer = $q.defer();
+        var items = $firebaseArray(fireBaseData.ref().child(tb1));
+     
+     items.$loaded().then(function(item) {
+      
+         angular.forEach(item, function(child) {
+              //console.log(user);
+             // console.log(job);
+
+              var t = $firebaseObject(fireBaseData.ref().child(tb2).child(child[key]));
+                child[key] = t;
+                //console.log(child[key]);
+
+                
+          })
+       defer.resolve(items);
+        });
+        
+
+      //return items;
+      return defer.promise;
 
 
+      },//end join
 
+      save_storeOB: function(ob) {
+      storeOB = ob;
+      },
 
+      get_storeOB: function() {
+      return storeOB;
+      }
+      
 
-
-
+    }
+})
 
 
 
