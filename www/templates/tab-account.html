@@ -1,8 +1,11 @@
+<!-- https://github.com/jagdeep-singh/angularMultipleSelect 
+-->
+
 <ion-view style="" class=" " id="page12" title="Settings">
-    <ion-content class="has-header" padding="false"  >
+    <ion-content class="has-header" padding="false" ng-controller="settingsCtrl" >
  
  
-      <form name="settingForm" class="list " id="settings-form">
+     
  
         <ion-list class=" " >
  
@@ -16,14 +19,52 @@
                 <p style="color: #ffffff;">{{user_info.displayName}}</p>
               </div>
             </div>
+              
+
+              <form name="multipleSelectForm"  >
+
+            <div ng-class="{'has-error' : multipleSelectForm.multipleSelect.$invalid2 && multipleSelectForm.multipleSelect.$dirty, 'has-success' : !multipleSelectForm.multipleSelect.$invalid2 && multipleSelectForm.multipleSelect.$dirty}">
+               
+                      
+          <LABEL>Location</LABEL>
+                <multiple-autocomplete ng-model="locationlistpick" name="multipleSelect" required="true"
+                                       suggestions-arr="locationlist" >
+                </multiple-autocomplete>
+
+<LABEL>ROLE</LABEL>
+                <multiple-autocomplete ng-model="rolelistpick" name="multipleSelect" required="true"
+                                       suggestions-arr="rolelist" >
+                </multiple-autocomplete>
+  <LABEL>TYPE</LABEL>
+                <multiple-autocomplete ng-model="typelistpick" name="multipleSelect" required="true"
+                                       suggestions-arr="typelist" >
+                </multiple-autocomplete>
+
+                <span ng-show="multipleSelectForm.multipleSelect.$invalid && multipleSelectForm.multipleSelect.$dirty" class="ng-hide">
+                    <p class="error-msg" ng-show="multipleSelectForm.multipleSelect.$error.required">Please select something from multiple select field</p>
+                </span>
+            </div>
+            <br/>
+            <button type="button" class="btn btn-default" ng-click="onSubmit()">Submit Form</button>
+       
+    </form>
+        
           </div>
 
-          
+
+
+
+
+ <form name="settingForm" class="list " id="settings-form">
           <label class="item item-input ic-selected">
             <a class="icon icon-right ion-search" style="margin-right: 10px;"></a>
             <input style="color: #000;" type="text" placeholder="" >
           </label>
- 
+
+
+
+
+
  
           <label class="item item-input ic-selected">
             <a class="icon icon-right ion-android-call" style="margin-right: 10px;"></a>
@@ -85,6 +126,6 @@
 
     </ion-content>
  
-	
+    
  
 </ion-view>

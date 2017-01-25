@@ -77,7 +77,49 @@ angular.module('starter.services', [])
 .factory('FBqueries', function($q,fireBaseData, $firebaseArray, $firebaseObject) {
 
     var storeOB;
+
+  var test1 = 33;
+  
+
+
+
+//console.log($firebaseArray(fireBaseData.ref().child('location')))
+
     return {
+
+      getlocationlistpick: function(){
+        return locationlistpick;
+      },
+      getrolelistpick: function(){
+        return rolelistpick;
+      },
+      gettypelistpick: function(){
+        return typelistpick;
+      },
+
+
+      initialize: function(){
+
+        locationlistpick = this.getlists("locations");
+        rolelistpick = this.getlists("roles");
+        typelistpick = this.getlists("types");
+
+      },
+
+      getlists: function(keya){
+        var arr = new Array();
+        fireBaseData.ref().child(keya).once('value', function(snap) {
+         // console.log(snap.val());
+
+          angular.forEach( snap.val(), 
+            function(item){
+            arr.push(item.Name);})
+        });
+       //console.log(arr);
+       //alert(arr);
+        return arr;
+      },
+
      
      test: function(a,b) {
 
@@ -129,7 +171,9 @@ angular.module('starter.services', [])
 
       get_storeOB: function() {
       return storeOB;
-      }
+      }, 
+
+
       
 
     }

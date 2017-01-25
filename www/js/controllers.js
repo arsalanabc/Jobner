@@ -12,6 +12,7 @@ angular.module('starter.controllers', ['ionic', 'ionic.contrib.ui.tinderCards2']
   //});
 
 firebase.auth().onAuthStateChanged(function(user) {
+   
       if (user) {
       //console.log(user.uid); 
         //Accessing an array of objects using firebaseObject, does not give you the $id , so use firebase array to get $id
@@ -36,7 +37,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 */    
 
-      //sharedUtils.showLoading(); //starts the loading popup
+      sharedUtils.showLoading(); //starts the loading popup
       var listofOB = [];
       var empOB;
       fireBaseData.ref().child('likes/'+user.uid).on('child_added', snap1 => {
@@ -65,7 +66,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       } // end if
 
       //console.log(listofOB);
-     // sharedUtils.hideLoading();  //3
+      sharedUtils.hideLoading();  //3
       $scope.jobsliked = listofOB;
       //$rootScope.storeOB = 43434;
 
@@ -112,6 +113,13 @@ firebase.auth().onAuthStateChanged(function(user) {
   $scope.settings = {
     enableFriends: true
   };
+
+
+
+      
+
+
+
 })
 
 .controller('signupCtrl', function($scope,$rootScope,sharedUtils,$ionicSideMenuDelegate,$state,fireBaseData,$ionicHistory) {
@@ -258,7 +266,7 @@ firebase.auth().onAuthStateChanged(function(user) {
   */
   
   .controller('settingsCtrl', function(
-    $scope,$rootScope, fireBaseData,$firebaseObject, $ionicPopup,$state,$window,$firebaseArray,sharedUtils,$ionicSideMenuDelegate, $ionicHistory) {
+    $scope,$rootScope, fireBaseData,$firebaseObject, $ionicPopup,$state,$window,$firebaseArray,sharedUtils,$ionicSideMenuDelegate, FBqueries,$ionicHistory) {
     //Bugs are most prevailing here
     $rootScope.extras=true;
  
@@ -383,10 +391,12 @@ firebase.auth().onAuthStateChanged(function(user) {
  
   //Function 2
     $scope.save= function (extras,editable) {
+
+
       //1. Edit Telephone doesnt show popup 2. Using extras and editable  // Bugs
       if(extras.telephone!="" && extras.telephone!=null ){
 
-        console.log(9878);
+        
         //Update  Telephone
         fireBaseData.refUser().child($scope.user_info.uid).update({    // set
           telephone: extras.telephone
@@ -447,6 +457,78 @@ console.log("lo");
       });
 
     }
+
+
+ $scope.locationlist = FBqueries.getlists("locations");
+  $scope.rolelist = FBqueries.getlists("roles");
+   $scope.typelist = FBqueries.getlists("types");
+
+ 
+      /* work on this later
+      $scope.locationlistpick = FBqueries.getlocationlistpick(); 
+      $scope.rolelistpick = FBqueries.getrolelistpick();
+      $scope.typelistpick = FBqueries.gettypelistpick();
+console.log($scope.locationlistpick );
+*/
+
+     //console.log($scope.locationlist);
+
+      //console.log(FBqueries.locationlist);
+
+      $scope.skillsList1 = [
+            {id: 1, name : "2Java"},
+            {id: 2, name : "C"},
+            {id: 3, name : "C++"},
+            {id: 4, name : "Core Java"},
+            {id: 5, name : "JavaScript"},
+            {id: 6, name : "PHP"},
+            {id: 7, name : "HTML"},
+            {id: 8, name : "CSS"},
+            {id: 9, name : "Angular Js"},
+            {id: 10, name : "Bootstrap"}
+        ];
+
+        $scope.skillsList = [
+            "Java",
+            "C",
+            "C++",
+            "Core Java",
+            "Javascript",
+            "PHP",
+            "MySql",
+            "Hibernate",
+            "Spring",
+            "AngularJs",
+            "BackboneJs",
+            "Sencha Touch",
+            "Austin",
+            "ExtJs"
+        ];
+
+        $scope.selectItemCallback = function(item){
+            $scope.selectedItem = item;
+        };
+
+        $scope.removeItemCallback = function(item){
+            $scope.removedItem = item;
+        };
+
+        $scope.onSubmit = function () {
+            console.log("submit");
+            console.log($scope.locationlistpick+$scope.rolelistpick+$scope.typelistpick);
+            if($scope.multipleSelectForm.$invalid){
+                if($scope.multipleSelectForm.$error.required != null){
+                    $scope.multipleSelectForm.$error.required.forEach(function(element){
+                        element.$setDirty();
+                        
+                    });
+                }
+
+                return null;
+            }
+            alert("valid field");
+        };
+        
  
 })
 
@@ -454,10 +536,11 @@ console.log("lo");
 
 })
 
+/*
 .factory('Jobs', function($firebaseArray) {
   var messagesRef = new Firebase("https://twinkle-49ce7.firebaseio.com/");
   return $firebaseArray(messagesRef);
-})
+})*/
 
 
 .directive('noScroll', function($document) {
@@ -476,7 +559,7 @@ console.log("lo");
 
 
 
-.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, $firebaseArray,fireBaseData, $ionicModal,$firebaseObject, Jobs) {
+.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, $firebaseArray,fireBaseData, $ionicModal,$firebaseObject) {
 
   var cardTypes = [
     {id:1, Title:"Revenue Analyst", Company:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Location:"Waterloo. Ont", Team:"Accounting", Salary:"competitive", image: 'http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg' },
@@ -484,8 +567,11 @@ console.log("lo");
     {id:3, image: 'http://c1.staticflickr.com/1/267/19067097362_14d8ed9389_n.jpg' }
   ];
 
+//$scope.cards = [{Title:"asdas"}, {Title:"44"},{Title:"55555"}];
+
 
 var jobs = $firebaseArray(fireBaseData.ref().child("jobs"));
+jobs;
      
      jobs.$loaded().then(function(cards) {
       
@@ -499,9 +585,10 @@ var jobs = $firebaseArray(fireBaseData.ref().child("jobs"));
 
               })
        $scope.cards = cards;
+
 });
 
-//console.log($scope.cards);
+console.log($scope.cards);
    
 
 
@@ -592,7 +679,7 @@ $scope.closeModal = function() {
     };
 
 //Firebase stuff
-$scope.jobs =  Jobs;
+//$scope.jobs =  Jobs;
 //console.log($scope.jobs);
 
 $scope.storeswipe = function(like_dislike,job){
@@ -603,7 +690,7 @@ $scope.storeswipe = function(like_dislike,job){
       
 
         //Add new address
-        var push = true;
+/*        var push = true;
           fireBaseData.ref().child(like_dislike).child(user.uid).on('child_added', function(data){    // push
             
             angular.forEach(data.val(),function(item){
@@ -614,10 +701,10 @@ $scope.storeswipe = function(like_dislike,job){
             //jobid : job.$id
               });
             }); 
+*/
 
 
-
-          if(push){
+          if(true){
             fireBaseData.ref().child(like_dislike).child(user.uid).push({    // push
            
                 jobid : job.$id

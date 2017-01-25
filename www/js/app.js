@@ -5,10 +5,11 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','firebase'] )
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','firebase','multipleSelect'] )
 
-.run(function($ionicPlatform,$rootScope) {
+.run(function($ionicPlatform,$rootScope,FBqueries) {
   $rootScope.extras = false;
+  FBqueries.initialize();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -23,6 +24,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','f
     }
   });
 })
+
+
 
 .config(function($stateProvider, $urlRouterProvider) {
 
@@ -120,8 +123,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','f
     url: '/account',
     views: {
       'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'settingsCtrl'
+        templateUrl: 'templates/tab-account.html'
+        //controller: 'settingsCtrl'
       }
     }
   });
