@@ -9,7 +9,7 @@ by swiping right or left respectively.
   - Back end: Node.js, Express
   - Database: Firebase
   
-### Testing up the App
+### Testing the App
 -------------------------
 1. Ensure you have [Ionic](http://ionicframework.com/getting-started/) installed (and are using latest version)
 
