@@ -1,3 +1,5 @@
+NOTE: use these logins, qwert@y.com and qwerty
+This is still in progress project
 # Jobner : fast and easy way to apply for jobs
 
 ## Description: 
