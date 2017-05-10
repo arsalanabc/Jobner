@@ -15,24 +15,25 @@
 
   </head>
   
-    <ion-pane class="background-grey">
+    <ion-pane  class="background-grey">
       
 
       <div class="td-title">
       
         <div class="row">
-          <div class="col">Master: <span>{{ cards.master.length }}</span></div>
-          <div class="col">Cards: <span>{{ cards.active.length }}</span></div>
-          <div class="col">Discards: <span>{{ cards.discards.length }}</span></div>
+          <div class="col">Master: <span>{{ 0}}</span></div>
+          <div class="col">Cards: <span>{{ 0 }}</span></div>
+          <div class="col">Discards: <span>{{ 0 }}</span></div>
         </div>
         <div class="row">
-          <div class="col">Liked: <span>{{ cards.liked.length }}</span></div>
-          <div class="col">Disliked: <span>{{ cards.disliked.length }}</span></div>
+          <div class="col">Liked: <span>{{ 0 }}</span></div>
+          <div class="col">Disliked: <span>{{ 0 }}</span></div>
         
-          <div class="col">like added: <span>{{ likes.jobid }}</span></div>
+          <div class="col">like added: <span>{{ 0 }}</span></div>
           </div>
         </div>
       </div>
+
 
 
       <!-- *************************
@@ -42,10 +43,8 @@
       ************************* -->
       <div ng-if="cards">
 
-
         <td-cards>
           <td-card ng-repeat="card in cards" on-destroy="cardDestroyed($index)" on-swipe-left="cardSwipedLeft($index)" on-swipe-right="cardSwipedRight($index)">
-            
 
 
               <div class="no-text"><i class="icon ion-thumbsdown"></i>No</div>

@@ -76,12 +76,10 @@ angular.module('starter.services', [])
 
 .factory('FBqueries', function($q,fireBaseData, $firebaseArray, $firebaseObject) {
 
-    var storeOB;
 
-  var test1 = 33;
-  
-
-
+var  locationlistpick;
+        var rolelistpick ;
+        var typelistpick;
 
 //console.log($firebaseArray(fireBaseData.ref().child('location')))
 
@@ -96,6 +94,17 @@ angular.module('starter.services', [])
       gettypelistpick: function(){
         return typelistpick;
       },
+
+      setlocationlistpick: function(newlist){
+        locationlistpick = newlist;
+      },
+      setrolelistpick: function(newlist){
+        rolelistpick = newlist;
+      },
+      settypelistpick: function(newlist){
+        typelistpick = newlist;
+      },
+
 
 
       initialize: function(){
@@ -165,16 +174,7 @@ angular.module('starter.services', [])
 
       },//end join
 
-      save_storeOB: function(ob) {
-      storeOB = ob;
-      },
-
-      get_storeOB: function() {
-      return storeOB;
-      }, 
-
-
-      
+          
 
     }
 })

@@ -56,7 +56,7 @@ firebase.auth().onAuthStateChanged(function(user) {
          empOB.job = snap2.val();
          empOB.job.Company = snap3.val();
           listofOB.push(empOB);
-         //  console.log(empOB);
+         // console.log(empOB);
           
         })
 
@@ -293,7 +293,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         $scope.data_editable.email=$scope.user_info.email;  // For editing store it in local variable
         $scope.data_editable.password="";
  
-        $scope.$apply();
+        //$scope.$apply();
  
         sharedUtils.hideLoading();
  
@@ -458,24 +458,39 @@ console.log("lo");
 
     }
 
+//work on this later
+ 
+      
+        fireBaseData.ref().child('locations').once("value", function(data){
+            var arr = new Array();
+         angular.forEach( data.val(), 
+                    function(item){
+                    arr.push(item.Name);
+                    //console.log(arr)
+                  }
+          )         
+        $scope.locationlistpick = arr;
+        });
+
+      //FBqueries.getlocationlistpick(); 
+
+
+
+
+      $scope.rolelistpick = FBqueries.getrolelistpick();
+      $scope.typelistpick = FBqueries.gettypelistpick();
+
 
  $scope.locationlist = FBqueries.getlists("locations");
   $scope.rolelist = FBqueries.getlists("roles");
    $scope.typelist = FBqueries.getlists("types");
 
- 
-      /* work on this later
-      $scope.locationlistpick = FBqueries.getlocationlistpick(); 
-      $scope.rolelistpick = FBqueries.getrolelistpick();
-      $scope.typelistpick = FBqueries.gettypelistpick();
-console.log($scope.locationlistpick );
-*/
 
-     //console.log($scope.locationlist);
+//console.log($scope.locationlistpick );
+//console.log($scope.locationlist);
+//console.log(FBqueries.locationlist);
 
-      //console.log(FBqueries.locationlist);
-
-      $scope.skillsList1 = [
+/*      $scope.skillsList1 = [
             {id: 1, name : "2Java"},
             {id: 2, name : "C"},
             {id: 3, name : "C++"},
@@ -503,7 +518,7 @@ console.log($scope.locationlistpick );
             "Sencha Touch",
             "Austin",
             "ExtJs"
-        ];
+        ];*/
 
         $scope.selectItemCallback = function(item){
             $scope.selectedItem = item;
@@ -516,6 +531,11 @@ console.log($scope.locationlistpick );
         $scope.onSubmit = function () {
             console.log("submit");
             console.log($scope.locationlistpick+$scope.rolelistpick+$scope.typelistpick);
+
+            FBqueries.setlocationlistpick($scope.locationlistpick);
+            FBqueries.setrolelistpick($scope.rolelistpick);
+            FBqueries.settypelistpick($scope.typelistpick);
+
             if($scope.multipleSelectForm.$invalid){
                 if($scope.multipleSelectForm.$error.required != null){
                     $scope.multipleSelectForm.$error.required.forEach(function(element){
@@ -528,7 +548,7 @@ console.log($scope.locationlistpick );
             }
             alert("valid field");
         };
-        
+      
  
 })
 
@@ -559,42 +579,109 @@ console.log($scope.locationlistpick );
 
 
 
-.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, $firebaseArray,fireBaseData, $ionicModal,$firebaseObject) {
+.controller('TPCtrl', function($scope, TDCardDelegate, $timeout, $firebaseArray,FBqueries,fireBaseData, $ionicModal,$firebaseObject,$q,sharedUtils) {
 
-  var cardTypes = [
+  var cards = [
     {id:1, Title:"Revenue Analyst", Company:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Location:"Waterloo. Ont", Team:"Accounting", Salary:"competitive", image: 'http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg' },
     {id:2, Title:"Revenue Analyst", Company:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Location:"Waterloo. Ont", Team:"Accounting", Salary:"competitive", image: 'https://facebookbrand.com/wp-content/themes/fb-branding/prj-fb-branding/assets/images/fb-art.png' },
     {id:3, image: 'http://c1.staticflickr.com/1/267/19067097362_14d8ed9389_n.jpg' }
   ];
 
-//$scope.cards = [{Title:"asdas"}, {Title:"44"},{Title:"55555"}];
+
+/*fireBaseData.ref().child('jobs').orderByChild('Location').startAt("Austin").endAt('Waterloo').on("child_added", function(snapshot) {
+  //console.log(snapshot.val());
+});*/
 
 
-var jobs = $firebaseArray(fireBaseData.ref().child("jobs"));
-jobs;
-     
-     jobs.$loaded().then(function(cards) {
-      
-       angular.forEach(cards, function(job) {
+
+$scope.query = function(table,listofloc,listofrole,listoftype){
+var result =[];
+
+sharedUtils.showLoading();
+
+  angular.forEach(listofloc, function(key){
+
+   $firebaseArray(fireBaseData.ref().child('jobs').orderByChild('Location').equalTo(key)).$loaded().then(function(array){
+
+    angular.forEach(array, function(snapshot){
+
+    // console.log(snapshot);
+
+       if($.inArray(snapshot.Role, listofrole) >= 0
+        || $.inArray(snapshot.Type, listoftype) >= 0
+        )
+          {
+            //pointing company 
+            var job_ob = snapshot;
+           // var com_ref = snapshot.Company;
+            var comp = $firebaseObject(fireBaseData.refCompany().child(job_ob.Company));
+
+              //console.log(job_ob.Company);
+              job_ob.Company = comp;
+              //console.log(job_ob);
+
+            result.push(job_ob);
+            //console.log(result);
+            $scope.cards = result;
+            console.log($scope.cards);
+          }
+          
+      }); 
+    });
+  });
+
+console.log("result")
+
+sharedUtils.hideLoading();
+//console.log(result);
+//return result;
+
+
+        
+}
+
+$scope.query('jobs',['Waterloo','Toronto',"Austin"],FBqueries.getrolelistpick(),FBqueries.gettypelistpick());
+
+console.log(FBqueries.getlocationlistpick());
+console.log(FBqueries.getrolelistpick());
+console.log(FBqueries.gettypelistpick());
+
+
+//console.log($.inArray("Waterloo", ['Toronto','Waterloo']));
+
+ 
+//console.log($scope.cards);
+
+
+
+/*var test = $firebaseArray(fireBaseData.ref().child('jobs'));
+//console.log($scope.cards.active+"b4 loaded");
+    test.$loaded().then(function(data){
+
+      angular.forEach(data, function(job) {
             //console.log(user);
            // console.log(job);
 
             //joining on Company
-            var t = $firebaseObject(fireBaseData.refCompany().child(job.Company));
+            var t = $firebaseObject(fireBaseData.ref().child('company').child(job.Company));
             job.Company = t;
 
-              })
-       $scope.cards = cards;
-
-});
-
-console.log($scope.cards);
-   
-
-
-
+              });
+     
+            //$scope.cards = Array.prototype.slice.call(test,0);
+   // console.log($scope.cards);
+    });*/
 /*
-$scope.getcompany = function(table,key){ 
+
+
+      test = [{Company:{id:"-Kb3cR6AL-vOB8fSHNjf",Logo:"http://c1.staticflickr.com/1/267/19067097362_14d8ed9389_n.jpg",Name:"Facebook"},Description:"Who are you?\n\n* You love trying to figure out what you have to say to get a \"yes\". There are no scripts here. You'll be writing your own. \n* You love working at home but don't mind coming into the office once in a while for productive meetings. \n* You speak up if you think we're making the wrong decision about product, culture, or timing. Communication is important to us, we hope it's important to you too! \n* You know how to use Slack. It's how we communicate. \n* You understand why a CRM is important and you're don't mind keep it up to date. \n* You take care of your health.",Location:"Austin",Perks:"You've got a rolodex of leads already of companies with 200+ employees \n* You've spent a lot of time selling to the CIO and CFO and you understand the politics between them \n* Even though we wouldn't ask you to, you could sell us a pen.",Qualifications:"* Passion for the hunt and a proven track record of getting through to “the kill.” \n* No fear about picking up the phone and calling strangers. \n* 3-5 years’ experience in SaaS sales - specifically finance and IT \n* Proficiency in structuring and closing complex deals with multiple variables \n* Strong analytical, organizational and interpersonal skills (People like you. Listen to you. And trust you!) \n* Strategic, sophisticated deal planning and negotiation \n* Track record of success in a start-up or fast-growth environment a major plus \n* Super self-motivation and time management and personal accountability \n* Collaborative, team-player sensibilities \n* Close proximity to Austin area",Responsibilities:"* Hunt down and discover new business opportunities \n* Go beyond the chase to cultivate prospects into paying clients \n* Roll up your sleeves and work with our leadership team to understand your prospect’s business challenges \n* Devise and pitch sale proposals that speak to client needs, and get them to say “yes” \n* Oversee client success (and renewal revenue!) \n* Define the sales collateral you need and work with the founders on developing those decks and leave behinds",Role:"Sales",Salary:"$170K – $250K",Title:"1Senior Account Executive",Type:"Full Time",$id:"-KapHTtsvZsqet0wjfVe"},{Company:{id:"-Kb2Og2A18Q43cqjLqRy",Logo:"http://www.logospike.com/wp-content/uploads/2014/11/Blackberry_logo-2.jpg",Name:"Blackberry"},Description:"We're looking to up-level our business development with a rockstar in real estate finance who understands the inner workings of commercial loan deals.",Location:"New York City",Perks:"Not available",Qualifications:"- Senior-level experience (7+ years) within a relevant real estate finance function - capital advisory, loan originations, or real estate investment. \n- Deep industry relationships with owners &amp; developers, lenders, and mortgage brokers. \n- Exceptional track record of success in developing strategy, and innovating on a business model. \n- Expert knowledge of real estate finance. \n- Adaptable and forward-thinking, able to create momentum around ideas internally and externally. \n- Ability to balance team leadership,cross-functional collaboration, and independent project execution. \n- Mortgage broker license a plus.",Responsibilities:"- Partner with the CEO in developing go-to-market strategy and driving execution. \n- Collaborate with product team on goals and product requirements for key market segments and partners. \n- Define appropriately aggressive goals, develop strategies to achieve them, and lead execution on customer acquisition, partnerships, and business initiatives. \n- Lay the foundation for the organization’s future sales, marketing, and operational growth.",Role:"Cofounder",Salary:"No Salary",Title:"Head of Business Development",Type:"Full-time",$id:"-KapJPQYk-hMWemAGYG0"},{Company:{id:"-KbCpmXs9PnUn5SYJUcF",Logo:"https://d1qb2nb5cznatu.cloudfront.net/startups/i/65735-141358817ad1c1d8e8282f2a6c7fb0f1-medium_jpg.jpg",Name:"A Thinking Ape"},Description:"A Thinking Ape is looking for extremely smart and talented software engineers \nto join our team in beautiful Vancouver, BC, Canaeda.\n\nWe’re looking for technical generalists: scientists at heart, engineers at work. You should be comfortable with designing and implementing applications from whiteboard diagram to production, enjoy working on massive scale technical problems, and have the itch to make something people want.\n\nSome of the problems we face include: \n• Architecting services that can handle a large number of concurrent \nactivities \n• Working with advanced caching and write-back strategies \n• Designing and implementing scalable, reliable and maintainable \ntechnologies for our mobile and web platforms",Location:"Vancouver",Perks:"Python, Objective C, Javascript, HTML, CSS, Android, iPhone",Qualifications:"Tell us if you: \n• Contribute or have contributed to an open source project \n• Launched your own iPhone, Android, or Facebook app \n• Regularly read Hacker News – send us your username if you do \n• Made something cool with python, objective-c, html5, redis, zeromq, or \nmongrel",Responsibilities:"Your background should include: \n• Proven software engineering talents \n• Solid knowledge and understanding of web architecture \n• Clear communication in code and in writing \n• Interest in metrics and data analysis",Role:"Software Engineer",Salary:"500000",Title:"Software Engineer",Type:"Full Time",$id:"-KbCo6jGOOacI-9nsNXU"},{Company:{id:"k"},Description:"skl",Location:"Austin",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Operations",Salary:"sd",Title:"test 1 water",Type:"Full time",$id:"-KbJDgq5Ju1buWiozPiZ"},{Company:{id:"k"},Description:"skl",Location:"Waterloo",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Operations",Salary:"sd",Title:"test 2 money",Type:"Full time",$id:"-KbJDxuJkD03bgIFUQyW"},{Company:{id:"k"},Description:"skl",Location:"Waterloo",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Designer",Salary:"sd",Title:"test 3 boujie",Type:"Full time",$id:"-KbJE4SfH-P34MXYk9Zr"},{Company:{id:"k"},Description:"skl",Location:"Waterloo",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Designer",Salary:"sd",Title:"test 3 this is new",Type:"Full time",$id:"-KbJE9XKNtcAHa5dme9A"},{Company:{id:"k"},Description:"skl",Location:"Toronto",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Designer",Salary:"sd",Title:"test 4 this is new",Type:"Full time",$id:"-KbJEDkcHuFEM48Q4Y5g"},{Company:{id:"k"},Description:"skl",Location:"Toronto",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Marketing",Salary:"sd",Title:"test 5 this is new",Type:"Full time",$id:"-KbJEOpjQWCE7qj35Wzt"},{Company:{id:"k"},Description:"skl",Location:"Toronto",Perks:"klj",Qualifications:"lkj",Responsibilities:"alskj",Role:"Marketing",Salary:"sd",Title:"test 6 this is experience",Type:"Part time",$id:"-KbJEULCn7CRZHh4gHrj"}];
+      
+*/
+
+
+
+
+/*$scope.getcompany = function(table,key){ 
   
  FBqueries.test(table,key).then(function(snap){
        $scope.result = snap;
@@ -624,7 +711,7 @@ $scope.getcompany = function(table,key){
 
 
   $scope.cardDestroyed = function(index) {
-    //$scope.cards.active.splice(index, 1);
+    $scope.cards.splice(index, 1);
   };
 
   $scope.addCard = function() {
@@ -634,15 +721,17 @@ $scope.getcompany = function(table,key){
 
   $scope.refreshCards = function() {
     // Set $scope.cards to null so that directive reloads
-    $scope.cards.active = null;
+    $scope.cards = null;
     $timeout(function() {
-      $scope.cards.active = Array.prototype.slice.call($scope.cards.master, 0);
+      //$scope.query('jobs',['Austin','New York City'],['Sales','Marketing'],['Part time']);
+       $scope.query('jobs',FBqueries.getlocationlistpick(),FBqueries.getrolelistpick(),FBqueries.gettypelistpick());
+      //console.log($scope.cards);
     });
   }
 
   $scope.$on('removeCard', function(event, element, card) {
-    var discarded = $scope.cards.master.splice($scope.cards.master.indexOf(card), 1);
-    $scope.cards.discards.push(discarded);
+    //var discarded = $scope.cards.master.splice($scope.cards.master.indexOf(card), 1);
+    //$scope.cards.discards.push(discarded);
   });
 
   $scope.cardSwipedLeft = function(index) {
@@ -683,7 +772,7 @@ $scope.closeModal = function() {
 //console.log($scope.jobs);
 
 $scope.storeswipe = function(like_dislike,job){
-       
+       console.log(job);
  firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         

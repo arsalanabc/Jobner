@@ -27,7 +27,7 @@
                
                       
           <LABEL>Location</LABEL>
-                <multiple-autocomplete ng-model="locationlistpick" name="multipleSelect" required="true"
+                <multiple-autocomplete ng-model="locationlistpick" id="tes" name="multipleSelect" required="true"
                                        suggestions-arr="locationlist" >
                 </multiple-autocomplete>
 
@@ -82,7 +82,7 @@
           </label>
  
  
- 
+
           <!--Address Header-->
           <label ng-click="addManipulation()" class="item item-input  item ic-selected" >
             <a class="icon icon-right ion-ios-location" style="margin-right: 10px;" ></a>
@@ -118,6 +118,7 @@
  
       </form>
  <!-- Floating action bar on the bottom of the app  -->
+
     <div class="button-bar"  >
       <a style="min-width: 50%;border-radius: 0px;" ng-click="cancel()" class="button button-lite icon-left ion-close">Cancel</a>
       <a style="min-width: 50%;border-radius: 0px;" ng-click="save(user_extras,data_editable)"  class="button button-assertive icon-left ion-checkmark">Save</a>
